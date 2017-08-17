@@ -39,19 +39,18 @@ def sendmail(subject, message):
 
 
 results = []
-errors = []
+error = False
+
+results.append('=== URLS CHECKS ===')
 for url in conf.URLS:
-    result = check(url)
-    results.append(result)
-    if not result[1]:
-        errors.append(result)
-
-if errors:
-    message = []
-    for url, error, status_code in errors:
+    url, status, status_code = check(url)
+    if not status:
+        error = True
         status_code = status_code if status_code else '   '
-        message.append('- [%s] %s' % (status_code, url))
+        results.append('- [%s] %s' % (status_code, url))
 
+if error:
+    message = list(results)
     message.append('')
     message.append('server: %s' % conf.HOSTNAME)
     message.append('timestamp: %s' % datetime.datetime.now().isoformat())
